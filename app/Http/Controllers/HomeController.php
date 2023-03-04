@@ -23,21 +23,18 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['items', 'payments'])->get();
+        $startDate = $request->get('start_date', date("Y-m-d"));
+        $endDate = $request->get('end_date', date("Y-m-d"));
+
+        $orders = Order::with(['items', 'payments'])->where([['created_at', '>=', $startDate . " 00:00:00"], ['created_at', '<=', $endDate . " 23:59:59"]])->get();
         $customers_count = Customer::count();
 
         return view('home', [
             'orders_count' => $orders->count(),
-            'income' => $orders->map(function($i) {
-                if($i->receivedAmount() > $i->total()) {
-                    return $i->total();
-                }
-                return $i->receivedAmount();
-            })->sum(),
-            'income_today' => $orders->where('created_at', '>=', date('Y-m-d').' 00:00:00')->map(function($i) {
-                if($i->receivedAmount() > $i->total()) {
+            'income' => $orders->map(function ($i) {
+                if ($i->receivedAmount() > $i->total()) {
                     return $i->total();
                 }
                 return $i->receivedAmount();

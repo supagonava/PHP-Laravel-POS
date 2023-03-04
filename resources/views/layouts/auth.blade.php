@@ -7,7 +7,7 @@
     <title>@yield('title')</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->

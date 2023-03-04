@@ -11,6 +11,11 @@ class Order extends Model
         'user_id'
     ];
 
+    public function cashier()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function items()
     {
         return $this->hasMany(OrderItem::class);
@@ -28,15 +33,15 @@ class Order extends Model
 
     public function getCustomerName()
     {
-        if($this->customer) {
+        if ($this->customer) {
             return $this->customer->first_name . ' ' . $this->customer->last_name;
         }
-        return 'Working Customer';
+        return 'หน้าร้าน';
     }
 
     public function total()
     {
-        return $this->items->map(function ($i){
+        return $this->items->map(function ($i) {
             return $i->price;
         })->sum();
     }
@@ -48,7 +53,7 @@ class Order extends Model
 
     public function receivedAmount()
     {
-        return $this->payments->map(function ($i){
+        return $this->payments->map(function ($i) {
             return $i->amount;
         })->sum();
     }

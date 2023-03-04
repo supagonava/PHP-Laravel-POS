@@ -50,7 +50,7 @@
             <div class="form-group">
                 <label for="barcode">Barcode</label>
                 <input type="text" name="barcode" class="form-control @error('barcode') is-invalid @enderror"
-                    id="barcode" placeholder="barcode" value="{{ old('barcode') }}">
+                    id="barcode" placeholder="barcode" value="{{ old('barcode') ?? Str::uuid() }}">
                 @error('barcode')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>

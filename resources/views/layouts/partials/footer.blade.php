@@ -1,7 +1,6 @@
 <footer class="main-footer">
     <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.0.3
+        <b>Version</b> {{ env('version', 0.1) }}
     </div>
-    <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong> All rights
-    reserved.
-  </footer>
+    <strong>SARABURI Point Of Sale {{ (int) date('Y') + 543 }} <a href="#"></strong>
+</footer>
