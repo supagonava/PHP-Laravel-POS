@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -30,7 +31,9 @@ class HomeController extends Controller
 
         $orders = Order::with(['items', 'payments'])->where([['created_at', '>=', $startDate . " 00:00:00"], ['created_at', '<=', $endDate . " 23:59:59"]])->get();
         $customers_count = Customer::count();
-
+        if (Auth::user()->role != 'admin') {
+            $orders = $orders->where('user_id', Auth::user()->id);
+        }
         return view('home', [
             'orders_count' => $orders->count(),
             'income' => $orders->map(function ($i) {

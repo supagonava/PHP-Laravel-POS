@@ -14,6 +14,7 @@ class Cart extends Component {
             barcode: "",
             search: "",
             customer_id: "",
+            amount: 0,
         };
 
         this.loadCart = this.loadCart.bind(this);
@@ -92,7 +93,7 @@ class Cart extends Component {
 
         axios
             .post("/admin/cart/change-qty", { product_id, quantity: qty })
-            .then((res) => {})
+            .then((res) => { })
             .catch((err) => {
                 Swal.fire("Error!", err.response.data.message, "error");
             });
@@ -100,7 +101,7 @@ class Cart extends Component {
 
     getTotal(cart) {
         const total = cart.map((c) => c.pivot.quantity * c.price);
-        return sum(total).toFixed(2);
+        return sum(total).toFixed(0);
     }
     handleClickDelete(product_id) {
         axios
@@ -173,34 +174,49 @@ class Cart extends Component {
     setCustomerId(event) {
         this.setState({ customer_id: event.target.value });
     }
-    handleClickSubmit() {
-        Swal.fire({
-            title: "Received Amount",
-            input: "text",
-            inputValue: this.getTotal(this.state.cart),
-            showCancelButton: true,
-            confirmButtonText: "Send",
-            showLoaderOnConfirm: true,
-            preConfirm: (amount) => {
-                return axios
-                    .post("/admin/orders", {
-                        customer_id: this.state.customer_id,
-                        amount,
-                    })
-                    .then((res) => {
-                        this.loadCart();
-                        return res.data;
-                    })
-                    .catch((err) => {
-                        Swal.showValidationMessage(err.response.data.message);
-                    });
-            },
-            allowOutsideClick: () => !Swal.isLoading(),
-        }).then((result) => {
-            if (result.value) {
-                //
+    async handleClickSubmit() {
+        try {
+            const confirmed = await Swal.fire({ title: "Confirm", 'text': "ยืนยันการขาย", showCancelButton: true })
+            if (!confirmed.isConfirmed) {
+                return 0;
             }
-        });
+            const res = await axios.post("/admin/orders", {
+                customer_id: this.state.customer_id,
+                amount: this.state.amount,
+            });
+            this.setState({ amount: 0 })
+            $('#cart-modal').modal('hide')
+            this.loadCart();
+            return res.data;
+        } catch (err) {
+            Swal.showValidationMessage(err.response.data.message);
+        }
+        // Swal.fire({
+        //     title: "ระบุจำนวนเงิน",
+        //     text: `ราคาสินค้า ${this.getTotal(this.state.cart)} บาท`,
+        //     input: "number",
+        //     inputValue: this.getTotal(this.state.cart),
+        //     showCancelButton: true,
+        //     confirmButtonText: "ยืนยัน",
+        //     showLoaderOnConfirm: true,
+        //     preConfirm: async (amount) => {
+        //         try {
+        //             const res = await axios.post("/admin/orders", {
+        //                 customer_id: this.state.customer_id,
+        //                 amount,
+        //             });
+        //             this.loadCart();
+        //             return res.data;
+        //         } catch (err) {
+        //             Swal.showValidationMessage(err.response.data.message);
+        //         }
+        //     },
+        //     allowOutsideClick: () => !Swal.isLoading(),
+        // }).then((result) => {
+        //     if (result.value) {
+        //         //
+        //     }
+        // });
     }
     render() {
         const { cart, products, customers, barcode } = this.state;
@@ -306,7 +322,8 @@ class Cart extends Component {
                                 type="button"
                                 className="btn btn-primary btn-block"
                                 disabled={!cart.length}
-                                onClick={this.handleClickSubmit}
+                                data-toggle="modal" data-target="#cart-modal"
+                                onClick={() => this.setState({ amount: this.getTotal(this.state.cart) })}
                             >
                                 Submit
                             </button>
@@ -342,6 +359,31 @@ class Cart extends Component {
                                 </h5>
                             </div>
                         ))}
+                    </div>
+                </div>
+
+                <div className="modal fade" id="cart-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" data-backdrop="static" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">คิดเงิน</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <h4>ราคาสินค้า {this.getTotal(this.state.cart)} บาท</h4>
+                                <div className="form-group">
+                                    <label>รับเงิน</label>
+                                    <input type="number" className="form-control" value={this.state.amount} onChange={(e) => { this.setState({ amount: e.target.value }) }} />
+                                </div>
+                                <h4>เงินทอน : {this.state.amount - this.getTotal(this.state.cart)}</h4>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button onClick={() => this.handleClickSubmit()} type="button" className="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

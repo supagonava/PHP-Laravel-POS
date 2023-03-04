@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OrderStoreRequest;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -23,6 +24,15 @@ class OrderController extends Controller
             $orders = $orders->where('created_at', '<=',  date('Y-m-d 23:59:59'));
         }
 
+        if ($request->cashier_name) {
+            $orders = $orders->whereHas('cashier', function ($query) use ($request) {
+                $query->where('first_name', 'like', '%' . $request->cashier_name . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->cashier_name . '%');
+            });
+        }
+        if (Auth::user()->role != 'admin') {
+            $orders = $orders->where('user_id', Auth::user()->id);
+        }
         $orders = $orders->with(['items', 'payments', 'customer'])->latest()->paginate(10);
 
         $total = $orders->map(function ($i) {

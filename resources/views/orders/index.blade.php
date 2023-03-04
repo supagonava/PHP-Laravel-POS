@@ -10,23 +10,27 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-7"></div>
                 <div class="col-md-5">
                     <form action="{{ route('orders.index') }}">
                         <div class="row">
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <input type="date" name="start_date" class="form-control"
                                     value="{{ request('start_date') }}" />
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <input type="date" name="end_date" class="form-control"
                                     value="{{ request('end_date') }}" />
                             </div>
-                            <div class="col-md-2">
-                                <button class="btn btn-outline-primary" type="submit">Submit</button>
+                            <div class="col-md-6">
+                                <input type="text" name="cashier_name" class="form-control"
+                                    value="{{ request('cashier_name') }}" placeholder="Cashier Name" />
                             </div>
                         </div>
                     </form>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-primary" type="submit">Filter</button>
+                    <a href="{{ route('orders.index') }}" class="btn btn-outline-primary">Reset</a>
                 </div>
             </div>
             <table class="table">
@@ -62,7 +66,8 @@
                                 @endif
                             </td>
                             <td>{{ config('settings.currency_symbol') }}
-                                {{ number_format($order->total() - $order->receivedAmount(), 2) }}</td>
+                                {{ number_format($order->total() - $order->receivedAmount(), 2) }}
+                            </td>
                             <td>{{ $order->created_at }}</td>
                         </tr>
                     @endforeach
@@ -79,7 +84,7 @@
                     </tr>
                 </tfoot>
             </table>
-            {{ $orders->render() }}
+            {{ $orders->appends(request()->query())->render() }}
         </div>
     </div>
 @endsection
