@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Setting;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 
@@ -26,23 +28,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Schema::defaultStringLength(191);
-
-        if (! $this->app->runningInConsole()) {
-            // 'key' => 'value'
-            $settings = Setting::all('key', 'value')
-                ->keyBy('key')
-                ->transform(function ($setting) {
-                    return $setting->value;
-                })
-                ->toArray();
-            config([
-               'settings' => $settings
-            ]);
-
-            config(['app.name' => config('settings.app_name')]);
+        if (env('APP_DEBUG')) {
+            DB::listen(function ($query) {
+                Log::info(
+                    $query->sql,
+                    ['bindings' => $query->bindings, 'time' => $query->time]
+                );
+            });
         }
-
-        Paginator::useBootstrap();
+        // Schema::defaultStringLength(191);
+        // dd([
+        //     env("DB_CONNECTION"),
+        //     env("DB_HOST"),
+        //     env("DB_PORT"),
+        //     env("DB_DATABASE"),
+        //     env("DB_USERNAME"),
+        //     env("DB_PASSWORD"),
+        //     env("DB_SSLMODE"),
+        //     env('MYSQL_ATTR_SSL_CA')
+        // ]);
+        // Paginator::useBootstrap();
     }
 }
