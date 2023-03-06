@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,25 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (env('APP_DEBUG')) {
-            DB::listen(function ($query) {
-                Log::info(
-                    $query->sql,
-                    ['bindings' => $query->bindings, 'time' => $query->time]
-                );
-            });
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
         }
-        // Schema::defaultStringLength(191);
-        // dd([
-        //     env("DB_CONNECTION"),
-        //     env("DB_HOST"),
-        //     env("DB_PORT"),
-        //     env("DB_DATABASE"),
-        //     env("DB_USERNAME"),
-        //     env("DB_PASSWORD"),
-        //     env("DB_SSLMODE"),
-        //     env('MYSQL_ATTR_SSL_CA')
-        // ]);
-        // Paginator::useBootstrap();
+        Schema::defaultStringLength(191);
+        Paginator::useBootstrap();
     }
 }
