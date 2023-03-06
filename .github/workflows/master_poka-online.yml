@@ -26,7 +26,18 @@ jobs:
         uses: andstor/file-existence-action@v1
         with:
           files: 'composer.json'
-
+          
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '12.x'
+          
+      - name: Install dependencies
+        run: yarn
+        
+      - name: Build nodejs
+        run: yarn build
+        
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
