@@ -33,8 +33,16 @@ class OrderController extends Controller
         if (Auth::user()->role != 'admin') {
             $orders = $orders->where('user_id', Auth::user()->id);
         }
-        $orders = $orders->with(['items', 'payments', 'customer'])->latest()->paginate(10);
 
+        $ordersCount = $orders->count();
+        $income = $orders->get()->map(function ($i) {
+            if ($i->receivedAmount() > $i->total()) {
+                return $i->total();
+            }
+            return $i->receivedAmount();
+        })->sum();
+
+        $orders = $orders->with(['items', 'payments', 'customer'])->latest()->paginate(10);
         $total = $orders->map(function ($i) {
             return $i->total();
         })->sum();
@@ -42,7 +50,13 @@ class OrderController extends Controller
             return $i->receivedAmount();
         })->sum();
 
-        return view('orders.index', compact('orders', 'total', 'receivedAmount'));
+        return view('orders.index', compact(
+            'orders',
+            'total',
+            'receivedAmount',
+            "ordersCount",
+            "income",
+        ));
     }
 
     public function store(OrderStoreRequest $request)

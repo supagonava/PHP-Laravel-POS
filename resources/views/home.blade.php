@@ -4,23 +4,17 @@
 
 @section('content')
     <div class="container-fluid">
-        <div class="row mb-3">
-            <div class="col-md-5">
-                <form>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" />
-                        </div>
-                        <div class="col-md-5">
-                            <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" />
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-outline-primary" type="submit">Submit</button>
-                        </div>
-                    </div>
-                </form>
+        <form class="row mb-2">
+            <div class="col-5 g-1">
+                <input type="date" name="start_date" class="form-control" value="{{ request('start_date', date('Y-m-d')) }}" />
             </div>
-        </div>
+            <div class="col-5 g-1">
+                <input type="date" name="end_date" class="form-control" value="{{ request('end_date', date('Y-m-d')) }}" />
+            </div>
+            <div class="col-2 g-1">
+                <button class="btn btn-outline-primary" type="submit">Submit</button>
+            </div>
+        </form>
         <div class="row">
             <div class="col-lg-3 col-6">
                 <!-- small box -->

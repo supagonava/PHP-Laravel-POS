@@ -41,8 +41,7 @@ class HomeController extends Controller
                     return $i->total();
                 }
                 return $i->receivedAmount();
-            })->sum(),
-            'customers_count' => $customers_count
+            })->sum()
         ]);
     }
 }
