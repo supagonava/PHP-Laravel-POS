@@ -8,6 +8,8 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -49,10 +51,6 @@ class ProductController extends Controller
     {
         $image_path = '';
 
-        if ($request->hasFile('image')) {
-            $image_path = $request->file('image')->store('products', 'public');
-        }
-
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
@@ -62,6 +60,12 @@ class ProductController extends Controller
             'quantity' => $request->quantity,
             'status' => $request->status
         ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $product->image = $product->storeImage($image);
+            $product->save();
+        }
 
         if (!$product) {
             return redirect()->back()->with('error', 'Sorry, there a problem while creating product.');
@@ -106,17 +110,13 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->quantity = $request->quantity;
         $product->status = $request->status;
+        $product->image = $product->image;
 
         if ($request->hasFile('image')) {
-            // Delete old image
-            if ($product->image) {
-                Storage::delete($product->image);
-            }
-            // Store image
-            $image_path = $request->file('image')->store('products', 'public');
-            // Save to Database
-            $product->image = $image_path;
+            $image = $request->file('image');
+            $product->image = $product->storeImage($image);
         }
+
 
         if (!$product->save()) {
             return redirect()->back()->with('error', 'Sorry, there\'re a problem while updating product.');
