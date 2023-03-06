@@ -15,6 +15,7 @@ class Cart extends Component {
             search: "",
             customer_id: "",
             amount: 0,
+            on_process: false,
         };
 
         this.loadCart = this.loadCart.bind(this);
@@ -176,52 +177,65 @@ class Cart extends Component {
     }
     async handleClickSubmit() {
         try {
+            if (this.state.amount == '' || this.state.amount <= 0 && this.getTotal(this.state.cart) > this.state.amount) {
+                Swal.fire({ title: "Error", 'icon': 'error', 'text': "รับเงินน้อยกว่าราคาสินค้า" })
+                return 0;
+            }
             const confirmed = await Swal.fire({ title: "Confirm", 'text': "ยืนยันการขาย", showCancelButton: true })
             if (!confirmed.isConfirmed) {
                 return 0;
             }
+
+            this.setState({ on_process: true })
             const res = await axios.post("/admin/orders", {
                 customer_id: this.state.customer_id,
                 amount: this.state.amount,
             });
             this.setState({ amount: 0 })
+            this.setState({ on_process: false })
             $('#cart-modal').modal('hide')
+            Swal.fire({ title: "เสร็จสิ้น", 'text': 'บันทึกการขายแล้ว', icon: "success" })
             this.loadCart();
             return res.data;
         } catch (err) {
             Swal.showValidationMessage(err.response.data.message);
         }
-        // Swal.fire({
-        //     title: "ระบุจำนวนเงิน",
-        //     text: `ราคาสินค้า ${this.getTotal(this.state.cart)} บาท`,
-        //     input: "number",
-        //     inputValue: this.getTotal(this.state.cart),
-        //     showCancelButton: true,
-        //     confirmButtonText: "ยืนยัน",
-        //     showLoaderOnConfirm: true,
-        //     preConfirm: async (amount) => {
-        //         try {
-        //             const res = await axios.post("/admin/orders", {
-        //                 customer_id: this.state.customer_id,
-        //                 amount,
-        //             });
-        //             this.loadCart();
-        //             return res.data;
-        //         } catch (err) {
-        //             Swal.showValidationMessage(err.response.data.message);
-        //         }
-        //     },
-        //     allowOutsideClick: () => !Swal.isLoading(),
-        // }).then((result) => {
-        //     if (result.value) {
-        //         //
-        //     }
-        // });
     }
     render() {
         const { cart, products, customers, barcode } = this.state;
         return (
-            <div className="row">
+            <div className="row w-100">
+                <div className="col-md-6 col-lg-8">
+                    <div className="mb-2">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search Product..."
+                            onChange={this.handleChangeSearch}
+                            onKeyDown={this.handleSeach}
+                        />
+                    </div>
+                    <div className="order-product">
+                        {products.map((p) => (
+                            <div
+                                onClick={() => this.addProductToCart(p.barcode)}
+                                key={p.id}
+                                className="item"
+                            >
+                                <img src={p.image_url} alt="" />
+                                <h5
+                                    style={
+                                        window.APP.warning_quantity > p.quantity
+                                            ? { color: "red" }
+                                            : {}
+                                    }
+                                >
+                                    {p.name}({p.quantity})
+                                </h5>
+                            </div>
+                        ))}
+                    </div>
+                </div>
                 <div className="col-md-6 col-lg-4">
                     <div className="row mb-2">
                         <div className="col">
@@ -330,41 +344,11 @@ class Cart extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="col-md-6 col-lg-8">
-                    <div className="mb-2">
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Search Product..."
-                            onChange={this.handleChangeSearch}
-                            onKeyDown={this.handleSeach}
-                        />
-                    </div>
-                    <div className="order-product">
-                        {products.map((p) => (
-                            <div
-                                onClick={() => this.addProductToCart(p.barcode)}
-                                key={p.id}
-                                className="item"
-                            >
-                                <img src={p.image_url} alt="" />
-                                <h5
-                                    style={
-                                        window.APP.warning_quantity > p.quantity
-                                            ? { color: "red" }
-                                            : {}
-                                    }
-                                >
-                                    {p.name}({p.quantity})
-                                </h5>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+
 
                 <div className="modal fade" id="cart-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" data-backdrop="static" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered" role="document">
-                        <div className="modal-content">
+                        {!this.state.on_process && <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">คิดเงิน</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
@@ -383,7 +367,15 @@ class Cart extends Component {
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                 <button onClick={() => this.handleClickSubmit()} type="button" className="btn btn-primary">Submit</button>
                             </div>
-                        </div>
+                        </div>}
+                        {this.state.on_process && <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">คิดเงิน</h5>
+                            </div>
+                            <div className="modal-body">
+                                <img className="w-100" src="/images/loading.gif" />
+                            </div>
+                        </div>}
                     </div>
                 </div>
             </div>
