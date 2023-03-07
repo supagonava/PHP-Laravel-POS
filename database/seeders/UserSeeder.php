@@ -45,31 +45,31 @@ class UserSeeder extends Seeder
         ]);
 
         User::updateOrCreate([
-            'email' => 'พระบาท@pb.com'
+            'email' => 'prabath@pb.com'
         ], [
             'first_name' => 'โรตี',
             'last_name' => 'พระบาท',
-            'email' => 'พระบาท@pb.com',
+            'email' => 'prabath@pb.com',
             'password' => bcrypt('pb@1234'),
             'role' => 'cashier'
         ]);
 
         User::updateOrCreate([
-            'email' => 'พระลาน@pb.com'
+            'email' => 'pralan@pb.com'
         ], [
             'first_name' => 'โรตี',
             'last_name' => 'พระลาน',
-            'email' => 'พระลาน@pb.com',
+            'email' => 'pralan@pb.com',
             'password' => bcrypt('pb@1234'),
             'role' => 'cashier'
         ]);
 
         User::updateOrCreate([
-            'email' => 'บ้านอ้อย@pb.com'
+            'email' => 'banaoi@pb.com'
         ], [
             'first_name' => 'โรตี',
             'last_name' => 'บ้านอ้อย',
-            'email' => 'บ้านอ้อย@pb.com',
+            'email' => 'banaoi@pb.com',
             'password' => bcrypt('pb@1234'),
             'role' => 'cashier'
         ]);
