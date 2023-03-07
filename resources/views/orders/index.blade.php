@@ -58,6 +58,23 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                @foreach ($totalProducts as $item)
+                    <div class="col-lg-2 col-4">
+                        <!-- small box -->
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h5>{{ $item->total }} ชิ้น</h5>
+                                <p>{{ $item->name }}</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-shopping-bag" aria-hidden="true"></i>
+                            </div>
+                            {{-- <a href="{{ route('orders.index') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a> --}}
+                        </div>
+                    </div>
+                @endforeach
+            </div>
             <div class="table-responsive mt-3">
                 <table class="table table-bordered">
                     <thead>
@@ -76,7 +93,12 @@
                         @foreach ($orders as $order)
                             <tr>
                                 <td>{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}</td>
-                                <td>{{ $order->cashier->getFullname() }}</td>
+                                <td>
+                                    <a
+                                        href="{{ route('orders.index', ['cashier_name' => $order->cashier->getFullname()]) }}">
+                                        {{ $order->cashier->getFullname() }}
+                                    </a>
+                                </td>
                                 <td>{{ $order->getCustomerName() }}</td>
                                 <td>
 

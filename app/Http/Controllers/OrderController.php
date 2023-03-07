@@ -6,6 +6,7 @@ use App\Http\Requests\OrderStoreRequest;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -27,7 +28,7 @@ class OrderController extends Controller
         if ($request->cashier_name) {
             $orders = $orders->whereHas('cashier', function ($query) use ($request) {
                 $query->where('first_name', 'like', '%' . $request->cashier_name . '%')
-                    ->orWhere('last_name', 'like', '%' . $request->cashier_name . '%');
+                    ->orWhere('last_name', 'like', '%' . $request->cashier_name . '%')->orWhereRaw("concat(first_name,' ',last_name) like \"%$request->cashier_name%\"");
             });
         }
         if (Auth::user()->role != 'admin') {
@@ -41,6 +42,14 @@ class OrderController extends Controller
             }
             return $i->receivedAmount();
         })->sum();
+
+
+        $totalProducts = DB::table('order_items')
+        ->select('products.name', DB::raw('sum(order_items.quantity) as total'))
+        ->join('products', 'order_items.product_id', '=', 'products.id')
+        ->whereIn('order_id', $orders->pluck('id')->toArray())
+        ->groupBy('products.name')
+        ->get();
 
         $orders = $orders->with(['items', 'payments', 'customer'])->latest()->paginate(10);
         $total = $orders->map(function ($i) {
@@ -56,6 +65,7 @@ class OrderController extends Controller
             'receivedAmount',
             "ordersCount",
             "income",
+            'totalProducts'
         ));
     }
 

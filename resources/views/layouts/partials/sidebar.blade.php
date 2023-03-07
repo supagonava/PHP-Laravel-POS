@@ -26,45 +26,45 @@
                 <li class="nav-item has-treeview">
                     <a href="{{ route('home') }}" class="nav-link">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
+                        <p>สรุปข้อมูล</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('cart.index') }}" class="nav-link {{ activeSegment('cart') }}">
                         <i class="nav-icon fas fa-cart-plus"></i>
-                        <p>Open POS</p>
+                        <p>หน้าร้าน</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('orders.index') }}" class="nav-link {{ activeSegment('orders') }}">
                         <i class="nav-icon fas fa-cart-plus"></i>
-                        <p>Orders</p>
+                        <p>ออเดอร์</p>
                     </a>
                 </li>
                 @if (Auth::user()->role == 'admin')
                     <li class="nav-item has-treeview">
                         <a href="{{ route('products.index') }}" class="nav-link {{ activeSegment('products') }}">
                             <i class="nav-icon fas fa-th-large"></i>
-                            <p>Products</p>
+                            <p>สินค้า</p>
                         </a>
                     </li>
                     <li class="nav-item has-treeview">
                         <a href="{{ route('users.index') }}" class="nav-link {{ activeSegment('users') }}">
                             <i class="nav-icon fas fa-users"></i>
-                            <p>Users</p>
+                            <p>ยูสเซอร์</p>
                         </a>
                     </li>
                     <li class="nav-item has-treeview">
                         <a href="{{ route('settings.index') }}" class="nav-link {{ activeSegment('settings') }}">
                             <i class="nav-icon fas fa-cogs"></i>
-                            <p>Settings</p>
+                            <p>ตั้งค่า</p>
                         </a>
                     </li>
                 @endif
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="document.getElementById('logout-form').submit()">
                         <i class="nav-icon fas fa-sign-out-alt"></i>
-                        <p>Logout</p>
+                        <p>ออกจากระบบ</p>
                         <form action="{{ route('logout') }}" method="POST" id="logout-form">
                             @csrf
                         </form>

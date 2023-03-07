@@ -31,7 +31,9 @@
                 <tr>
                     <td>{{ $product->id }}</td>
                     <td>{{ $product->name }}</td>
-                    <td><img class="product-img" src="{{ url($product->image) }}" alt=""></td>
+                    <td>
+                        <img class="product-img" src="{{ url($product->image) }}" alt="">
+                    </td>
                     {{-- <td>{{$product->barcode}}</td> --}}
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->quantity }}</td>

@@ -210,27 +210,21 @@ class Cart extends Component {
                         <input
                             type="text"
                             className="form-control"
-                            placeholder="Search Product..."
+                            placeholder="ค้นหาผลิตภัณฑ์ ..."
                             onChange={this.handleChangeSearch}
                             onKeyDown={this.handleSeach}
                         />
                     </div>
-                    <div className="order-product">
+                    <div className="order-product row">
                         {products.map((p) => (
                             <div
                                 onClick={() => this.addProductToCart(p.barcode)}
                                 key={p.id}
-                                className="item"
+                                className="col-md-4 col-6"
                             >
-                                <img src={p.image_url} alt="" />
-                                <h5
-                                    style={
-                                        window.APP.warning_quantity > p.quantity
-                                            ? { color: "red" }
-                                            : {}
-                                    }
-                                >
-                                    {p.name}({p.quantity})
+                                <img src={p.image} style={{ objectFit: "cover", width: "100%" }} />
+                                <h5 className="text-center pt-2">
+                                    {p.name}
                                 </h5>
                             </div>
                         ))}
@@ -243,7 +237,7 @@ class Cart extends Component {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Scan Barcode..."
+                                    placeholder="สแกนบาร์โค้ด ..."
                                     value={barcode}
                                     onChange={this.handleOnChangeBarcode}
                                 />
@@ -269,9 +263,9 @@ class Cart extends Component {
                             <table className="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th className="text-right">Price</th>
+                                        <th>ชื่อผลิตภัณฑ์</th>
+                                        <th>ปริมาณ</th>
+                                        <th className="text-right">ราคา</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -328,7 +322,7 @@ class Cart extends Component {
                                 onClick={this.handleEmptyCart}
                                 disabled={!cart.length}
                             >
-                                Cancel
+                                ยกเลิก
                             </button>
                         </div>
                         <div className="col">
@@ -339,14 +333,14 @@ class Cart extends Component {
                                 data-toggle="modal" data-target="#cart-modal"
                                 onClick={() => this.setState({ amount: this.getTotal(this.state.cart) })}
                             >
-                                Submit
+                                ยืนยันรายการ
                             </button>
                         </div>
                     </div>
                 </div>
 
 
-                <div className="modal fade" id="cart-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" data-backdrop="static" aria-hidden="true">
+                <div className="modal fade" id="cart-modal" tabIndex="-1" role="dialog" aria-labelledby="modelTitleId" data-backdrop="static" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         {!this.state.on_process && <div className="modal-content">
                             <div className="modal-header">
