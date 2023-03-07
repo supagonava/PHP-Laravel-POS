@@ -26,6 +26,7 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        return redirect()->to(route("orders.index"));
         $startDate = $request->get('start_date', date("Y-m-d"));
         $endDate = $request->get('end_date', date("Y-m-d"));
 
