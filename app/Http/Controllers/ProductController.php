@@ -47,7 +47,7 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ProductStoreRequest $request)
+    public function store(Request $request)
     {
         $image_path = '';
 
@@ -102,7 +102,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(ProductUpdateRequest $request, Product $product)
+    public function update(Request $request, Product $product)
     {
         $product->name = $request->name;
         $product->description = $request->description;
@@ -111,12 +111,9 @@ class ProductController extends Controller
         $product->quantity = $request->quantity;
         $product->status = $request->status;
         $product->image = $product->image;
-
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $product->image = $product->storeImage($image);
+        if ($request->image) {
+            $product->image = $product->storeImage($request->image);
         }
-
 
         if (!$product->save()) {
             return redirect()->back()->with('error', 'Sorry, there\'re a problem while updating product.');

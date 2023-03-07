@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
 
 class Product extends Model
 {
@@ -18,7 +19,7 @@ class Product extends Model
         'status'
     ];
 
-    public function storeImage($image)
+    public function storeImage(UploadedFile $image)
     {
         if (!is_dir(public_path('products'))) {
             mkdir(public_path('products'));
@@ -26,15 +27,16 @@ class Product extends Model
         if ($this->image && is_file(public_path($this->image))) {
             unlink(public_path($this->image));
         }
-
-        // Resize the image to a width of 500px and a height proportional to the original image
-        $resizedImage = Image::make($image)->resize(500, null, function ($constraint) {
+        $fileName = Str::uuid();
+        $image_path = '/products/' . $fileName  . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('/products/'), $fileName  . '.' . $image->getClientOriginalExtension());
+        // $base64 = base64_encode(public_path($image_path));
+        $imageContents = file_get_contents(public_path($image_path));
+        $resizedImage = Image::make($imageContents);
+        $resizedImage->resize(800, 800, function ($constraint) {
             $constraint->aspectRatio();
-        });
+        })->save(public_path($image_path));
 
-        // Save the resized image to a storage location
-        $image_path = '/products/' . $image->hashName();
-        $resizedImage->save(public_path($image_path));
         return $image_path;
     }
 }
