@@ -10,6 +10,10 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+
+Route::get('/info', function () {
+    phpinfo();
+});
 Route::get('/', function () {
     return redirect('/admin');
 });
